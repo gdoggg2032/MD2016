@@ -1,0 +1,1 @@
+python ./decoder.py ./bigram.txt ./encode.txt ./test.txt ../pred.txt

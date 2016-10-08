@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}%
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]%
+{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{changepage}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}%
+\setcounter{MaxMatrixCols}{30}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+%\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\usepackage[]{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsmath}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+
+
+\begin{document}
+
+\title{Machine Discovering Assignment 1-1}
+\author{Tung-Chun, Chiang R05922027}
+\date{\today}
+\maketitle
+
+
+
+ 
+
+\section{Problem description}
+\begin{itemize}
+	\item Given:
+		\begin{itemize}
+			\item character-level bigram language model
+			\item the probabilities of encoding a character to another
+			\item encoded text
+		\end{itemize}
+	\item Goal:
+		\begin{itemize}
+			\item the original text before encoded (decoding problem)
+		\end{itemize}
+\end{itemize}
+
+\section{Assumptions}
+\begin{itemize}
+	\item Assumptions:
+		\begin{itemize}
+			\item In the original text, a character only depends on its last character.
+			\item An encoded character only depends on its original character.
+			\item Whitespaces are always encoded to whitespaces.
+		\end{itemize}
+\end{itemize}
+\section{Graphical model}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=.36]{model.eps}
+\caption{Graphical model}
+\label{fig:model}
+\end{figure}
+
+\section{Inference}
+Based on our graphical model, a word only depends on its last word. Also, whitespaces are always encoded to whitespaces. We can split the whole encoded text into segments(words) with whitespaces. So, we can decode each segment separately.
+\subsection{Viterbi algorithm}
+
+According to our graphical model, our goal is to find a sequence $C$ to maximize the  posterior given the evidence sequence $E$:\\
+
+\begin{align*}
+MPA(C|E) &= \argmax\limits_{C}P(C|E)\\
+&= \argmax\limits_{C}\frac { P(E|C)P(C) }{ P(E) } = \argmax\limits_{C} P(E|C)P(C)\\
+&= \argmax\limits_{C}P(c_1|whitespace)P(e_1|c_1)\sum_{ i=2 }^{N}{ P(c_i|c_{i-1})P(e_i|c_i) } 
+\end{align*}
+
+For each segment, we assume it start from a whitespace (including the first segment) and use Viterbi algorithm to decide the decoded text. Viterbi algorithm is a kind of dynamic processing algorithm, and it works efficiently.\\
+
+\subsection{n-best Viterbi algorithm}
+Different from original Viterbi algorithm, we save top $k$ candidate paths. But we can't use English wordlist, so we only choose the top one as result. If we can use wordlist, we can find the top English word as result. If there is no English word in top $k$ candidates, we choose the top segment as answer.
+
+
+%\subsection{Dictionary filter}
+%After Viterbi algorithm, a segment is decoded to another segment and the latter has to be an English word. So we add this constraint: we import a wordlist from NLTK (a NLP toolkit for Python), and count the edit distance between the decoded segment and each word in the wordlist. To save computation, we only use the words which have the same length as the decoded segment. Finally, we choose the word with minimal edit distance as result.
+\section{References}
+
+\textbf{Viterbi Algorithm:} \url{https://en.wikipedia.org/wiki/Viterbi_algorithm} \\
+
+
+
+\end{document}
